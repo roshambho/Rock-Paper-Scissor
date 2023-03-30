@@ -1,5 +1,7 @@
 # Rock paper scissors game based on gesture recognition through WebCam
 
+![rpsDemo](https://user-images.githubusercontent.com/44278467/228929681-6d0de6d6-1bae-4dca-8ca7-bd16059ac2da.png)
+
 * Uses mainly the openCV library, python3 and Google's MediaPipe library.
 * This game can see your hand (using webcam) and detect the gesture, after which it will play with its randomly generated move.
 * Real-time image classifier (SGD Classifier from sklearn) with 99.7% accuracy.
