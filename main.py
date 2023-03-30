@@ -1,5 +1,4 @@
-# just importing stuff
-from cv2 import cv2
+import cv2
 import hand_detection_module
 from data_generation import num_hand
 import pickle
@@ -9,41 +8,41 @@ from id_distance import calc_all_distance
 from scipy import stats as st
 from collections import deque
 import numpy as np
+import pandas as pd
 
-
-# Programme core
+# Heart of the game
 model_name = 'hand_model.sav'
 
+font = cv2.FONT_HERSHEY_SIMPLEX
+hands = hand_detection_module.HandDetector(max_hands=num_hand)
+model = pickle.load(open(model_name, 'rb')) # Note that hand_model.sav is now loaded in variable 'model'
+TIMER = int(3)
+cScore = int(0)
+uScore = int(0)
+# Instead of working on a single prediction, we will take the mode of 10 predictions
+smooth_factor = 10  # by using a deque object. This way even if we face a false positive, we would easily ignore it
 
-# custom function
+
 def rps(num):
-    if num == 0: return 'PAPER'
-    elif num == 1: return 'ROCK'
-    else: return 'SCISSOR'
+    if num == 0:
+        return 'PAPER'
+    elif num == 1:
+        return 'ROCK'
+    else:
+        return 'SCISSOR'
 
-
-# Helper function to find out winner
-def findout_winner(user_move, Computer_move):
-
-    if user_move == Computer_move:
+def findout_winner(user_move, computer_move):
+    # Dictionary to store the winning combinations
+    winning_combinations = {
+        'ROCK': 'SCISSOR',
+        'PAPER': 'ROCK',
+        'SCISSOR': 'PAPER'
+    }
+    if user_move == computer_move:
         return "It's a tie!"
-
-    elif user_move == "ROCK" and Computer_move == "SCISSOR":
+    elif winning_combinations[user_move] == computer_move:
         return "You won!"
-
-    elif user_move == "ROCK" and Computer_move == "PAPER":
-        return "Computer won"
-
-    elif user_move == "SCISSOR" and Computer_move == "ROCK":
-        return "Computer won"
-
-    elif user_move == "SCISSOR" and Computer_move == "PAPER":
-        return "You won!"
-
-    elif user_move == "PAPER" and Computer_move == "ROCK":
-        return "You won!"
-
-    elif user_move == "PAPER" and Computer_move == "SCISSOR":
+    else:
         return "Computer won"
 
 
@@ -97,27 +96,18 @@ def show_winner(user_score, computer_score):
         return False
 
 
-# variable declaration
-font = cv2.FONT_HERSHEY_SIMPLEX
-hands = hand_detection_module.HandDetector(max_hands=num_hand)
-model = pickle.load(open(model_name, 'rb'))  # Note that hand_model.sav is now loaded in variable 'model'
-TIMER = int(3)
-cScore = int(0)
-uScore = int(0)
-smooth_factor = 50  # Instead of working on a single prediction, we will take the mode of 5 predictions
-# by using a deque object. This way even if we face a false positive, we would easily ignore it
-
 # Initial deque list will have 'nothing'.
 de = deque(['nothing'] * smooth_factor, maxlen=smooth_factor)
 
-
 # Starting cam
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(0)
+feature_names = [f'feature{i}' for i in range(210)]  # Create feature names
 while True:
     ret, frame = cap.read()
     frame = cv2.flip(frame, 1)
     cv2.rectangle(frame, (0, 505), (1280, 570), (0, 0, 0), -1)
-    cv2.putText(frame, f"How many rounds would you like to play? (1 to 9)", (50, 550), font, 1.5, (0, 255, 255), 3, cv2.LINE_AA)
+    cv2.putText(frame, f"How many rounds would you like to play? (1 to 9)",
+                (50, 550), font, 1.5, (0, 255, 255), 3, cv2.LINE_AA)
     cv2.imshow('Game Start Screen', frame)
     r = cv2.waitKey(25)  # r variable stores no. of rounds of the game
     # print(r) # for debugging purpose
@@ -132,7 +122,8 @@ while True:
             # Display countdown on each frame
             # specify the font and draw the countdown using puttext
             cv2.rectangle(img, (140, 490), (1000, 580), (0, 0, 0), -1)
-            cv2.putText(img, f"Show your move in: {str(TIMER)}", (200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
+            cv2.putText(img, f"Show your move in: {str(TIMER)}", (
+                200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
             cv2.imshow('Countdown', img)
             cv2.waitKey(25)
 
@@ -150,47 +141,61 @@ while True:
             cv2.destroyAllWindows()
             i = 0
             while i < smooth_factor:
-                success, moveImg = cap.read()  # Capture the images from camera for 50 times (loop)
+                success, moveImg = cap.read()
                 moveImg = cv2.flip(moveImg, 1)
-                image, list_of_landmarks = hands.find_hand_landmarks(moveImg, draw_landmarks=True)
+                image, list_of_landmarks = hands.find_hand_landmarks(
+                    moveImg, draw_landmarks=True)
                 height, width, _ = image.shape
-                all_distance = calc_all_distance(height, width, list_of_landmarks)
-                prediction = rps(model.predict([all_distance])[0])
+                all_distance = calc_all_distance(
+                    height, width, list_of_landmarks)
+                # Convert all_distance to a DataFrame and set column names
+                all_distance_df = pd.DataFrame(
+                    [all_distance], columns=feature_names)
+
+                # Use the DataFrame for prediction
+                prediction = rps(model.predict(all_distance_df)[0])
                 de.appendleft(prediction)
                 i += 1
-            try:
-                mode_of_prediction = st.mode(de)[0][0]
 
-            except:
-                print('Stats error')
-                continue
+            de_list = list(de)  # Convert deque to list
+            # Create DataFrame from list
+            de_df = pd.DataFrame(de_list, columns=['prediction'])
+            mode_of_prediction = de_df['prediction'].mode()[0]
+
             cv2.rectangle(image, (0, 0), (1280, 40), (0, 0, 0), -1)
-            image = cv2.putText(image, f"Your move: {mode_of_prediction}", (700, 30), font, 1, (0, 255, 0), 3)
+            image = cv2.putText(
+                image, f"Your move: {mode_of_prediction}", (700, 30), font, 1, (0, 255, 0), 3)
 
             user_move = mode_of_prediction
             computer_move = choice(['ROCK', 'PAPER', 'SCISSOR'])
 
             winner = findout_winner(user_move, computer_move)
-            image = cv2.putText(image, f"Computer's move: {computer_move}", (20, 30), font, 1, (0, 255, 0), 3)
+            image = cv2.putText(
+                image, f"Computer's move: {computer_move}", (20, 30), font, 1, (0, 255, 0), 3)
 
             # Adding black background in bottom3
             cv2.rectangle(image, (0, 550), (1280, 720), (0, 0, 0), -1)
 
-            image = cv2.putText(image, f"Result: {winner}", (450, 600), font, 1.5, (0, 255, 0), 3)
+            image = cv2.putText(
+                image, f"Result: {winner}", (450, 600), font, 1.5, (0, 255, 0), 3)
             # image = cv2.putText(image, f"Press '2n' to start next round", (150, 600), font, 2, (0, 255, 0), 3)
             if winner == "You won!":
                 uScore += 1
             elif winner == "Computer won":
                 cScore += 1
 
-            image = cv2.putText(image, f"Your Score: {uScore}", (800, 650), font, 1, (0, 255, 0), 3)
-            image = cv2.putText(image, f"Computer's  Score: {cScore}", (100, 650), font, 1, (0, 255, 0), 3)
-            image = cv2.putText(image, f"Press 'Enter' for next round", (100, 700), font, 1, (0, 255, 0), 3)
-            image = cv2.putText(image, f"Developed by Aishwary Shukla", (950, 700), font, 0.6, (0, 255, 0), 2)
+            image = cv2.putText(
+                image, f"Your Score: {uScore}", (800, 650), font, 1, (0, 255, 0), 3)
+            image = cv2.putText(
+                image, f"Computer's  Score: {cScore}", (100, 650), font, 1, (0, 255, 0), 3)
+            image = cv2.putText(
+                image, f"Press 'Enter' for next round", (100, 700), font, 1, (0, 255, 0), 3)
+            image = cv2.putText(
+                image, f"Developed by Aishwary Shukla", (950, 700), font, 0.6, (0, 255, 0), 2)
             display_computer_move(computer_move, image)  # Function call
 
             r -= 1
-            print(r)
+            print(r-48)
             cv2.imshow('Game', image)
             n = cv2.waitKey(0)
             if n == 13:

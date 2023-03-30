@@ -1,24 +1,27 @@
 import math
 
-
 def list_of_id():
-    a = [i for i in range(21)]
-    b = []
-    for i in a:
-        for j in range(len(a)-(i+1)):
-            b.append(([i, i+j+1]))
-    return b
-
+    """
+    Generate a list of all unique combinations of indices from 0 to 20 (inclusive).
+    """
+    ids = [i for i in range(21)]
+    id_combinations = [(i, i+j+1) for i in ids for j in range(len(ids)-(i+1))]
+    return id_combinations
 
 def distance_2d(p1, p2):
+    """
+    Calculate the Euclidean distance between two 2D points.
+    """
     distance = math.sqrt(
         math.pow(p1[0]-p2[0], 2) +
         math.pow(p1[1]-p2[1], 2)
     )
     return int(distance)
 
-
 def calc_all_distance(height, width, landmark_list):
+    """
+    Calculate distances between all pairs of hand landmarks.
+    """
     if landmark_list:
         my_list = list_of_id()
         all_distance = []
@@ -29,6 +32,6 @@ def calc_all_distance(height, width, landmark_list):
             all_distance.append(distance)
         return all_distance
     else:
-        all_distance = [1] * 210  # If hand not detected then this fake array is provided to prevent error
-        # This wrong prediction is taken care since statistical mode of predictions is taken
+        all_distance = [1] * 210  # If hand not detected, return a fake array to prevent errors
+        # This wrong prediction is taken care of since statistical mode of predictions is taken
         return all_distance

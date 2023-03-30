@@ -1,4 +1,4 @@
-from cv2 import cv2
+import cv2
 import mediapipe as mp
 
 class HandDetector:
@@ -19,20 +19,25 @@ class HandDetector:
 
   def find_hand_landmarks(self, image, draw_landmarks=True):
     landmark_list = []
-    img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    img.flags.writeable = False
-    results = self.hands.process(img)
-    img.flags.writeable = True
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    if results.multi_hand_landmarks:
-      for hand_landmarks in results.multi_hand_landmarks:
-        if draw_landmarks:
-          self.mp_drawing.draw_landmarks(img, hand_landmarks
-                                         , self.mp_hands.HAND_CONNECTIONS)
-        for i in range(21):
-          per_point = [hand_landmarks.landmark[i].x,
-                       hand_landmarks.landmark[i].y,
-                       hand_landmarks.landmark[i].z]
-          landmark_list.append(per_point)
-    return img, landmark_list
 
+    try:
+        img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        img.flags.writeable = False
+        results = self.hands.process(img)
+        img.flags.writeable = True
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+        if results.multi_hand_landmarks:
+            for hand_landmarks in results.multi_hand_landmarks:
+                if draw_landmarks:
+                    self.mp_drawing.draw_landmarks(img, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
+                for i in range(21):
+                    per_point = [hand_landmarks.landmark[i].x,
+                                 hand_landmarks.landmark[i].y,
+                                 hand_landmarks.landmark[i].z]
+                    landmark_list.append(per_point)
+    except Exception as e:
+        print(f"Error processing hand landmarks: {e}")
+        return image, []
+
+    return img, landmark_list

@@ -7,7 +7,7 @@ break_time = 2  # min 2 seconds
 #  ******************** while training, show PAPER, ROCK then SCISSOR  ********************
 
 if __name__ == '__main__':
-    from cv2 import cv2
+    import cv2
     import pandas as pd
     import time
     import hand_detection_module
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     data_target = 0
 
     hands = hand_detection_module.HandDetector(max_hands=num_hand)
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     while cap.isOpened():
         success, frame = cap.read()
         if not success:
@@ -31,7 +31,9 @@ if __name__ == '__main__':
             full_data.append(distance_list)
             print(len(full_data))
         cv2.imshow('Hands', image)
-        cv2.waitKey(1)
+        key = cv2.waitKey(1)
+        if key == ord('q'):
+            break
         if len(full_data) >= num_instance:
             print('Creating Pandas DataFrame...')
             hand1_df = pd.DataFrame(full_data)
@@ -43,6 +45,6 @@ if __name__ == '__main__':
             else:
                 time.sleep(break_time)
                 print('waiting for 2 seconds, show next gesture')
-                time.sleep(2)
+                time.sleep(break_time)
 
     cap.release()

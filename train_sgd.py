@@ -14,6 +14,11 @@ hand_df = hand_df.sample(frac=1)
 
 # splitting datasets
 x, y = hand_df.drop('y', axis=1), hand_df['y']
+
+# Set feature names for the input data
+feature_names = [f'feature{i}' for i in range(x.shape[1])]
+x.columns = feature_names
+
 x_train, x_test, y_train, y_test = train_test_split(x, y,
                                                     random_state=14,
                                                     test_size=0.5)
