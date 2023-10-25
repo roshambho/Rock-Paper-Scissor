@@ -99,6 +99,9 @@ questions_selected = False
 def display_question_and_options(frame):
     question = questions[current_question]
     # cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
+    # cv2.putText(frame, "Question SHIVA", (200, 450), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 255), 3, cv2.LINE_AA)
+    # cv2.putText(frame, f"Question SHIVA", (
+    #     200, 450), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
     cv2.putText(frame, f"Question {current_question + 1}: {question}", (
         200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
 
@@ -111,12 +114,12 @@ def display_question(frame):
 
 # Create a function to display options on the camera screen
 def display_options(frame):
-    # y = 50  # Y-coordinate for the first option
-    y = 550 
+    y = 50  # Y-coordinate for the first option
+    # y = 50 
     for option_key, option_text in options.items():
-        # cv2.putText(frame, f"Option {option_key}: {option_text}", (50, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
-        cv2.putText(frame, f"Option {option_key}: {option_text}", (
-            200, y), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
+        cv2.putText(frame, f"Option {option_key}: {option_text}", (50, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+        # cv2.putText(frame, f"Option {option_key}: {option_text}", (
+        #     200, y), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
         y += 40  # Adjust the vertical position for the next option
 
 # helper function to show result screen
@@ -176,8 +179,8 @@ while True:
 
             # Display countdown on each frame
             # specify the font and draw the countdown using puttext
-            cv2.rectangle(img, (140, 490), (1000, 580), (0, 0, 0), -1)
-            display_question_and_options(frame)
+            # cv2.rectangle(img, (140, 490), (1000, 580), (0, 0, 0), -1)
+            display_question_and_options(img)
             # display_question(frame)
             # display_options(frame)
 
@@ -192,7 +195,7 @@ while True:
             #     200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
 
 
-            cv2.putText(img, f"Show your move in: {str(TIMER)}", (
+            cv2.putText(img, f"Show your mudra in: {str(TIMER)}", (
                 200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
             cv2.imshow('Countdown', img)
             cv2.waitKey(25)
