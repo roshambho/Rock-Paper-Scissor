@@ -135,6 +135,9 @@ while True:
     cv2.putText(frame, f"How many rounds would you like to play? (1 to 9)",
                 (50, 550), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3, cv2.LINE_AA)
     
+    # Display the current question before starting the timer
+    display_question(frame)
+
     # Call the function to display options on the camera screen
     display_options(frame)
 
