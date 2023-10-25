@@ -83,7 +83,7 @@ def show_winner(user_score, computer_score):
     else:
         image = cv2.imread("images/draw.png")
 
-    cv2.imshow("Rock Paper Scissors", image)
+    cv2.imshow("Rock Paper Scissors Namaskaram", image)
 
     # If enter is pressed.
     k = cv2.waitKey(0)
@@ -191,7 +191,7 @@ while True:
             image = cv2.putText(
                 image, f"Press 'Enter' for next round", (100, 700), font, 1, (0, 255, 0), 3)
             image = cv2.putText(
-                image, f"Developed by Aishwary Shukla", (950, 700), font, 0.6, (0, 255, 0), 2)
+                image, f"Developed by Roshan and Anmol", (950, 700), font, 0.6, (0, 255, 0), 2)
             display_computer_move(computer_move, image)  # Function call
 
             r -= 1
