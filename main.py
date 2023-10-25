@@ -10,6 +10,25 @@ from collections import deque
 import numpy as np
 import pandas as pd
 
+# GPT START
+# Define your multiple-choice options
+options = {
+    'A': 'Rock',
+    'B': 'Paper',
+    'C': 'Scissors',
+    'D': 'Lizard'  # Add additional choices as needed
+}
+
+# Create a function to display options on the camera screen
+def display_options(frame):
+    y = 50  # Y-coordinate for the first option
+    for option_key, option_text in options.items():
+        cv2.putText(frame, f"Option {option_key}: {option_text}", (50, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+        y += 40  # Adjust the vertical position for the next option
+# GPT END
+
+
+
 # Heart of the game
 model_name = 'hand_model.sav'
 
@@ -71,6 +90,13 @@ def display_computer_move(computer_move_name, image):
 
     return image
 
+# Initialize the current question
+current_question = 0
+
+# Create a function to display the current question
+def display_question(frame):
+    question = questions[current_question]
+    cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
 
 # helper function to show result screen
 def show_winner(user_score, computer_score):
@@ -107,9 +133,17 @@ while True:
     frame = cv2.flip(frame, 1)
     cv2.rectangle(frame, (0, 505), (1280, 570), (0, 0, 0), -1)
     cv2.putText(frame, f"How many rounds would you like to play? (1 to 9)",
-                (50, 550), font, 1.5, (0, 255, 255), 3, cv2.LINE_AA)
+                (50, 550), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3, cv2.LINE_AA)
+    
+    # Call the function to display options on the camera screen
+    display_options(frame)
+
     cv2.imshow('Game Start Screen', frame)
-    r = cv2.waitKey(25)  # r variable stores no. of rounds of the game
+    
+    r = cv2.waitKey(25)  # r variable stores the number of rounds of the game
+# end GPT
+
+
     # print(r) # for debugging purpose
     while 48 < r <= 57:  # Ascii values for 0 & 9
         cv2.destroyAllWindows()
