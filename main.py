@@ -19,13 +19,6 @@ options = {
     'D': 'Lizard'  # Add additional choices as needed
 }
 
-# Create a function to display options on the camera screen
-def display_options(frame):
-    y = 50  # Y-coordinate for the first option
-    for option_key, option_text in options.items():
-        cv2.putText(frame, f"Option {option_key}: {option_text}", (50, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
-        y += 40  # Adjust the vertical position for the next option
-# GPT END
 
 
 
@@ -90,13 +83,41 @@ def display_computer_move(computer_move_name, image):
 
     return image
 
+# Define a list of questions
+questions = [
+    "What is the capital of France?",
+    "Which planet is known as the Red Planet?",
+    "What is 2 + 2?",
+    "Which city is famous for its canals?"
+]
+
 # Initialize the current question
 current_question = 0
+questions_selected = False 
+
+# Create a function to display the current question and options
+def display_question_and_options(frame):
+    question = questions[current_question]
+    # cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
+    cv2.putText(frame, f"Question {current_question + 1}: {question}", (
+        200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
+
+    display_options(frame)
 
 # Create a function to display the current question
 def display_question(frame):
     question = questions[current_question]
     cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
+
+# Create a function to display options on the camera screen
+def display_options(frame):
+    # y = 50  # Y-coordinate for the first option
+    y = 550 
+    for option_key, option_text in options.items():
+        # cv2.putText(frame, f"Option {option_key}: {option_text}", (50, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+        cv2.putText(frame, f"Option {option_key}: {option_text}", (
+            200, y), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
+        y += 40  # Adjust the vertical position for the next option
 
 # helper function to show result screen
 def show_winner(user_score, computer_score):
@@ -134,22 +155,19 @@ while True:
     cv2.rectangle(frame, (0, 505), (1280, 570), (0, 0, 0), -1)
     cv2.putText(frame, f"How many rounds would you like to play? (1 to 9)",
                 (50, 550), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3, cv2.LINE_AA)
-    
-    # Display the current question before starting the timer
-    display_question(frame)
+    # display_question_and_options(frame)
 
-    # Call the function to display options on the camera screen
-    display_options(frame)
+    r = cv2.waitKey(25)  # r variable stores the number of rounds of the game
 
     cv2.imshow('Game Start Screen', frame)
-    
-    r = cv2.waitKey(25)  # r variable stores the number of rounds of the game
-# end GPT
-
 
     # print(r) # for debugging purpose
     while 48 < r <= 57:  # Ascii values for 0 & 9
         cv2.destroyAllWindows()
+
+        # # Create a new frame/rectangle for displaying question and options
+        # cv2.rectangle(frame, (0, 0), (1280, 720), (0, 0, 0), -1)
+
         prev = time.time()
 
         while TIMER >= 0:
@@ -159,6 +177,21 @@ while True:
             # Display countdown on each frame
             # specify the font and draw the countdown using puttext
             cv2.rectangle(img, (140, 490), (1000, 580), (0, 0, 0), -1)
+            display_question_and_options(frame)
+            # display_question(frame)
+            # display_options(frame)
+
+            # question = questions[current_question]
+            # cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
+            # display_options(frame)
+
+            # cv2.putText(img, f"QUESTION: {str(TIMER)}", (
+            #     200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
+
+            # cv2.putText(img, f"Questio: {str(TIMER)}", (
+            #     200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
+
+
             cv2.putText(img, f"Show your move in: {str(TIMER)}", (
                 200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
             cv2.imshow('Countdown', img)
