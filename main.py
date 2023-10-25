@@ -13,10 +13,10 @@ import pandas as pd
 # GPT START
 # Define your multiple-choice options
 options = {
-    'A': 'Rock',
-    'B': 'Paper',
-    'C': 'Scissors',
-    'D': 'Lizard'  # Add additional choices as needed
+    'A': 'Milan',
+    'B': 'Bologna',
+    'C': 'Paris',
+    # 'D': 'Lizard'  # Add additional choices as needed
 }
 
 
@@ -28,7 +28,7 @@ model_name = 'hand_model.sav'
 font = cv2.FONT_HERSHEY_SIMPLEX
 hands = hand_detection_module.HandDetector(max_hands=num_hand)
 model = pickle.load(open(model_name, 'rb')) # Note that hand_model.sav is now loaded in variable 'model'
-TIMER = int(3)
+TIMER = int(7)
 cScore = int(0)
 uScore = int(0)
 # Instead of working on a single prediction, we will take the mode of 10 predictions
@@ -56,6 +56,26 @@ def findout_winner(user_move, computer_move):
         return "You won!"
     else:
         return "Computer won"
+
+
+def check_selection(user_move): #, question <-- to ADD
+    # Dictionary to store the winning combinations
+    winning_combinations = {
+        'ROCK': 'A',
+        'PAPER': 'B',
+        'SCISSOR': 'C',
+    }
+
+    if winning_combinations[user_move] == 'C':
+        return "You selected C! Correct!"
+    else:
+        return "Incorrect :/"
+    # if user_move == computer_move:
+    #     return "It's a tie!"
+    # elif winning_combinations[user_move] == computer_move:
+    #     return "You won!"
+    # else:
+    #     return "Computer won"
 
 
 # helper function to show computer's hand
@@ -90,6 +110,8 @@ questions = [
     "What is 2 + 2?",
     "Which city is famous for its canals?"
 ]
+
+
 
 # Initialize the current question
 current_question = 0
@@ -180,6 +202,7 @@ while True:
             # Display countdown on each frame
             # specify the font and draw the countdown using puttext
             # cv2.rectangle(img, (140, 490), (1000, 580), (0, 0, 0), -1)
+
             display_question_and_options(img)
             # display_question(frame)
             # display_options(frame)
@@ -195,10 +218,12 @@ while True:
             #     200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
 
 
-            cv2.putText(img, f"Show your mudra in: {str(TIMER)}", (
-                200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
+            cv2.putText(img, f"Show your gesture in: {str(TIMER)}", (
+                200, 750), font, 2, (0, 255, 255), 3, cv2.LINE_AA) #TODO: change font
             cv2.imshow('Countdown', img)
             cv2.waitKey(25)
+
+            
 
             # current time
             cur = time.time()
@@ -243,6 +268,10 @@ while True:
             computer_move = choice(['ROCK', 'PAPER', 'SCISSOR'])
 
             winner = findout_winner(user_move, computer_move)
+
+            option_selected_correctly = check_selection(user_move) # RRAM
+
+
             image = cv2.putText(
                 image, f"Computer's move: {computer_move}", (20, 30), font, 1, (0, 255, 0), 3)
 
@@ -250,7 +279,7 @@ while True:
             cv2.rectangle(image, (0, 550), (1280, 720), (0, 0, 0), -1)
 
             image = cv2.putText(
-                image, f"Result: {winner}", (450, 600), font, 1.5, (0, 255, 0), 3)
+                image, f"Result: {option_selected_correctly}", (450, 600), font, 1.5, (0, 255, 0), 3)
             # image = cv2.putText(image, f"Press '2n' to start next round", (150, 600), font, 2, (0, 255, 0), 3)
             if winner == "You won!":
                 uScore += 1

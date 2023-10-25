@@ -101,7 +101,7 @@ def show_winner(user_score, computer_score):
 font = cv2.FONT_HERSHEY_SIMPLEX
 hands = hand_detection_module.HandDetector(max_hands=num_hand)
 model = pickle.load(open(model_name, 'rb'))  # Note that hand_model.sav is now loaded in variable 'model'
-TIMER = int(3)
+TIMER = int(7)
 cScore = int(0)
 uScore = int(0)
 smooth_factor = 50  # Instead of working on a single prediction, we will take the mode of 5 predictions
