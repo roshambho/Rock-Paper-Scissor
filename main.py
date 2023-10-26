@@ -11,13 +11,6 @@ import numpy as np
 import pandas as pd
 
 # GPT START
-# Define your multiple-choice options
-options = {
-    'A': 'Milan',
-    'B': 'Bologna',
-    'C': 'Paris',
-    # 'D': 'Lizard'  # Add additional choices as needed
-}
 
 
 
@@ -25,10 +18,11 @@ options = {
 # Heart of the game
 model_name = 'hand_model.sav'
 
+countdown_time = 10
 font = cv2.FONT_HERSHEY_SIMPLEX
 hands = hand_detection_module.HandDetector(max_hands=num_hand)
 model = pickle.load(open(model_name, 'rb')) # Note that hand_model.sav is now loaded in variable 'model'
-TIMER = int(7)
+TIMER = int(countdown_time)
 cScore = int(0)
 uScore = int(0)
 # Instead of working on a single prediction, we will take the mode of 10 predictions
@@ -58,16 +52,17 @@ def findout_winner(user_move, computer_move):
         return "Computer won"
 
 
-def check_selection(user_move): #, question <-- to ADD
+def check_selection(user_move, question): #, question <-- to ADD
     # Dictionary to store the winning combinations
-    winning_combinations = {
+    gesture_to_options = {
         'ROCK': 'A',
         'PAPER': 'B',
         'SCISSOR': 'C',
     }
-
-    if winning_combinations[user_move] == 'C':
-        return "You selected C! Correct!"
+    selected_option = gesture_to_options[user_move]
+    correct_option = correct_option_mapping[question]
+    if selected_option == correct_option:
+        return f"You selected {selected_option}! Correct!"
     else:
         return "Incorrect :/"
     # if user_move == computer_move:
@@ -105,29 +100,38 @@ def display_computer_move(computer_move_name, image):
 
 # Define a list of questions
 questions = [
-    "What is the capital of France?",
-    "Which planet is known as the Red Planet?",
-    "What is 2 + 2?",
-    "Which city is famous for its canals?"
+    "Where is Isha yoga center located?",
+    "What's the ratio of Indian:Overseas applicants ?",
+    "What's on top of vanashri?"
 ]
 
+options = {
+"Where is Isha yoga center located?":{'A': 'Chennai (Rock)','B': 'Mumbai (Paper)','C': 'Coimbatore (Scissor)'},
+"What's the ratio of Indian:Overseas applicants ?":{'A': '1:5 (Rock)','B':'5:1 (Paper)','C': '3:7 (Scissor)'},
+"What's on top of vanashri?":{'A': 'Gana (Rock)','B':'Flower (Paper)','C': 'Om (Scissor)'}
+}
 
+correct_option_mapping = {
+"Where is Isha yoga center located?":'C',
+"What's the ratio of Indian:Overseas applicants ?":'B',
+"What's on top of vanashri?":'A'
+}
 
 # Initialize the current question
-current_question = 0
+
 questions_selected = False 
 
 # Create a function to display the current question and options
-def display_question_and_options(frame):
-    question = questions[current_question]
+def display_question_and_options(frame, qn_no, qn_count):
+    question = questions[qn_no]
     # cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
     # cv2.putText(frame, "Question SHIVA", (200, 450), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 255), 3, cv2.LINE_AA)
     # cv2.putText(frame, f"Question SHIVA", (
     #     200, 450), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
-    cv2.putText(frame, f"Question {current_question + 1}: {question}", (
-        200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
+    cv2.putText(frame, f"Question {qn_count + 1}: {question}", (
+        200, 550), font, 1.8, (0, 255, 255), 3, cv2.LINE_AA)
 
-    display_options(frame)
+    display_options(frame, question)
 
 # Create a function to display the current question
 def display_question(frame):
@@ -135,25 +139,20 @@ def display_question(frame):
     cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
 
 # Create a function to display options on the camera screen
-def display_options(frame):
-    y = 50  # Y-coordinate for the first option
+def display_options(frame, question):
+    y = 100  # Y-coordinate for the first option
     # y = 50 
-    for option_key, option_text in options.items():
-        cv2.putText(frame, f"Option {option_key}: {option_text}", (50, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+    for option_key, option_text in options[question].items():
+        cv2.rectangle(frame, (0, y-70), (1200, y+50), (0, 0, 0), -1)
+        cv2.putText(frame, f"Option {option_key}: {option_text}", (50, y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0), 3)
         # cv2.putText(frame, f"Option {option_key}: {option_text}", (
         #     200, y), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
-        y += 40  # Adjust the vertical position for the next option
+        y += 100  # Adjust the vertical position for the next option
 
 # helper function to show result screen
-def show_winner(user_score, computer_score):
-    if user_score > computer_score:
-        image = cv2.imread("images/youwin.jpg")
-
-    elif user_score < computer_score:
-        image = cv2.imread("images/comwins.png")
-
-    else:
-        image = cv2.imread("images/draw.png")
+def show_winner():
+    
+    image = cv2.imread("images/youwin.jpg")
 
     cv2.imshow("Rock Paper Scissors Namaskaram", image)
 
@@ -186,40 +185,39 @@ while True:
 
     cv2.imshow('Game Start Screen', frame)
 
-    # print(r) # for debugging purpose
+    print("rounds",r) # for debugging purpose
+    total_questions = r-48 # r = 49 maps to 1 round hence 1 question
+    question_sequence = np.random.permutation(total_questions).tolist()
+    print(question_sequence)
+    qn_count = 0
+    # wait for user to choose no of rounds between 0 to 9
     while 48 < r <= 57:  # Ascii values for 0 & 9
         cv2.destroyAllWindows()
-
+        
         # # Create a new frame/rectangle for displaying question and options
         # cv2.rectangle(frame, (0, 0), (1280, 720), (0, 0, 0), -1)
 
         prev = time.time()
-
+        print("qn count",qn_count)
+        qn_no = question_sequence[qn_count]
+        question = questions[qn_no]
+        print("qn no",qn_no)
         while TIMER >= 0:
             ret, img = cap.read()
             img = cv2.flip(img, 1)
 
             # Display countdown on each frame
             # specify the font and draw the countdown using puttext
-            # cv2.rectangle(img, (140, 490), (1000, 580), (0, 0, 0), -1)
+            #
 
-            display_question_and_options(img)
-            # display_question(frame)
-            # display_options(frame)
+            display_question_and_options(img, qn_no, qn_count)
 
-            # question = questions[current_question]
-            # cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
-            # display_options(frame)
-
-            # cv2.putText(img, f"QUESTION: {str(TIMER)}", (
-            #     200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
-
-            # cv2.putText(img, f"Questio: {str(TIMER)}", (
-            #     200, 550), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
-
-
-            cv2.putText(img, f"Show your gesture in: {str(TIMER)}", (
-                200, 750), font, 2, (0, 255, 255), 3, cv2.LINE_AA) #TODO: change font
+            cv2.rectangle(img, (0, 670), (1919, 800), (0, 0, 0), -1)
+            cv2.rectangle(img, (600, 800), (800, 900), (0, 0, 0), -1)
+            img = cv2.putText(img, f"Show a gesture (Rock/Paper/Scissor) to select an option", (
+                100, 750), font, 1.8, (0, 255, 0), 3, cv2.LINE_AA) #TODO: change font
+            img = cv2.putText(img, f"{str(TIMER)}", (
+                670, 850), font, 2, (0, 0, 255), 3, cv2.LINE_AA)
             cv2.imshow('Countdown', img)
             cv2.waitKey(25)
 
@@ -234,7 +232,7 @@ while True:
             if cur - prev >= 1:
                 prev = cur
                 TIMER = TIMER - 1
-
+            
         else:  # when timer is up
             cv2.destroyAllWindows()
             i = 0
@@ -260,20 +258,20 @@ while True:
             de_df = pd.DataFrame(de_list, columns=['prediction'])
             mode_of_prediction = de_df['prediction'].mode()[0]
 
-            cv2.rectangle(image, (0, 0), (1280, 40), (0, 0, 0), -1)
+            cv2.rectangle(image, (0, 0), (1920, 100), (0, 0, 0), -1)
             image = cv2.putText(
-                image, f"Your move: {mode_of_prediction}", (700, 30), font, 1, (0, 255, 0), 3)
+                image, f"Your gesture: {mode_of_prediction}", (700, 60), font, 2, (0, 255, 0), 3)
 
             user_move = mode_of_prediction
             computer_move = choice(['ROCK', 'PAPER', 'SCISSOR'])
 
             winner = findout_winner(user_move, computer_move)
 
-            option_selected_correctly = check_selection(user_move) # RRAM
+            option_selected_correctly = check_selection(user_move,question) # RRAM
 
 
-            image = cv2.putText(
-                image, f"Computer's move: {computer_move}", (20, 30), font, 1, (0, 255, 0), 3)
+            #image = cv2.putText(
+            #    image, f"Computer's move: {computer_move}", (20, 30), font, 1, (0, 255, 0), 3)
 
             # Adding black background in bottom3
             cv2.rectangle(image, (0, 550), (1280, 720), (0, 0, 0), -1)
@@ -289,13 +287,12 @@ while True:
             image = cv2.putText(
                 image, f"Your Score: {uScore}", (800, 650), font, 1, (0, 255, 0), 3)
             image = cv2.putText(
-                image, f"Computer's  Score: {cScore}", (100, 650), font, 1, (0, 255, 0), 3)
-            image = cv2.putText(
                 image, f"Press 'Enter' for next round", (100, 700), font, 1, (0, 255, 0), 3)
             image = cv2.putText(
-                image, f"Developed by Roshan and Anmol", (950, 700), font, 0.6, (0, 255, 0), 2)
-            display_computer_move(computer_move, image)  # Function call
-
+                image, f"Attention is all you need", (950, 700), font, 1, (0, 255, 0), 2)
+            #display_computer_move(computer_move, image)  # Function call
+            
+            qn_count += 1
             r -= 1
             print(r-48)
             cv2.imshow('Game', image)
@@ -303,12 +300,13 @@ while True:
             if n == 13:
                 cv2.destroyAllWindows()
             if r == 48:
-                play_again = show_winner(uScore, cScore)
+                play_again = show_winner()
 
                 if play_again:
                     uScore, cScore = 0, 0
 
-        TIMER = int(3)
+        TIMER = int(countdown_time)
+        
 
     else:
         continue
