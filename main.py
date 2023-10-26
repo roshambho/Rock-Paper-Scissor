@@ -26,7 +26,8 @@ TIMER = int(countdown_time)
 cScore = int(0)
 uScore = int(0)
 # Instead of working on a single prediction, we will take the mode of 10 predictions
-smooth_factor = 10  # by using a deque object. This way even if we face a false positive, we would easily ignore it
+smooth_factor = 5  # by using a deque object. This way even if we face a false positive, we would easily ignore it
+# reduce the smooth factor to reduce lag for real-time detection
 
 
 def rps(num):
@@ -140,7 +141,7 @@ def display_question(frame):
 
 # Create a function to display options on the camera screen
 def display_options(frame, question):
-    y = 100  # Y-coordinate for the first option
+    y = 200  # Y-coordinate for the first option
     # y = 50 
     for option_key, option_text in options[question].items():
         cv2.rectangle(frame, (0, y-70), (1200, y+50), (0, 0, 0), -1)
@@ -203,22 +204,54 @@ while True:
         question = questions[qn_no]
         print("qn no",qn_no)
         while TIMER >= 0:
-            ret, img = cap.read()
-            img = cv2.flip(img, 1)
+        ########## REAL-TIME RECOGNITION START ##########
+           
+            i = 0
+            while i < smooth_factor:
+                success, moveImg = cap.read()
+                moveImg = cv2.flip(moveImg, 1)
+                image, list_of_landmarks = hands.find_hand_landmarks(
+                    moveImg, draw_landmarks=True)
+                height, width, _ = image.shape
+                all_distance = calc_all_distance(
+                    height, width, list_of_landmarks)
+                # Convert all_distance to a DataFrame and set column names
+                all_distance_df = pd.DataFrame(
+                    [all_distance], columns=feature_names)
+
+                # Use the DataFrame for prediction
+                prediction = rps(model.predict(all_distance_df)[0])
+                de.appendleft(prediction)
+                i += 1
+
+            de_list = list(de)  # Convert deque to list
+            # Create DataFrame from list
+            de_df = pd.DataFrame(de_list, columns=['prediction'])
+            mode_of_prediction = de_df['prediction'].mode()[0]
+
+            cv2.rectangle(image, (0, 0), (1920, 100), (0, 0, 0), -1)
+            image = cv2.putText(
+                image, f"Your gesture: {mode_of_prediction}", (700, 60), font, 2, (0, 255, 0), 3)
+            #print("here")
+            cv2.imshow('Countdown',image)
+            ########### REAL-TIME RECOGNITION END ########
+        
+            #ret, image = cap.read()
+            #image = cv2.flip(image, 1)
 
             # Display countdown on each frame
             # specify the font and draw the countdown using puttext
             #
 
-            display_question_and_options(img, qn_no, qn_count)
+            display_question_and_options(image, qn_no, qn_count)
 
-            cv2.rectangle(img, (0, 670), (1919, 800), (0, 0, 0), -1)
-            cv2.rectangle(img, (600, 800), (800, 900), (0, 0, 0), -1)
-            img = cv2.putText(img, f"Show a gesture (Rock/Paper/Scissor) to select an option", (
-                100, 750), font, 1.8, (0, 255, 0), 3, cv2.LINE_AA) #TODO: change font
-            img = cv2.putText(img, f"{str(TIMER)}", (
-                670, 850), font, 2, (0, 0, 255), 3, cv2.LINE_AA)
-            cv2.imshow('Countdown', img)
+            cv2.rectangle(image, (0, 900), (1919, 1000), (0, 0, 0), -1)
+            cv2.rectangle(image, (600, 1000), (800, 1080), (0, 0, 0), -1)
+            image = cv2.putText(image, f"Show a gesture (Rock/Paper/Scissor) to select an option", (
+                100, 950), font, 1.8, (0, 255, 0), 3, cv2.LINE_AA) #TODO: change font
+            image = cv2.putText(image, f"{str(TIMER)}", (
+                670, 1020), font, 2, (0, 0, 255), 3, cv2.LINE_AA)
+            cv2.imshow('Countdown', image)
             cv2.waitKey(25)
 
             
