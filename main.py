@@ -63,7 +63,7 @@ def check_selection(user_move, question): #, question <-- to ADD
     selected_option = gesture_to_options[user_move]
     correct_option = correct_option_mapping[question]
     if selected_option == correct_option:
-        return f"You selected {selected_option}! Correct!"
+        return f"Correct :)"
     else:
         return "Incorrect :/"
     # if user_move == computer_move:
@@ -98,7 +98,7 @@ def display_computer_move(computer_move_name, image):
     image[200:340, 50:350] = combined
 
     return image
-
+#def display_kbc_bar
 # Define a list of questions
 questions = [
     "Where is Isha yoga center located?",
@@ -107,9 +107,9 @@ questions = [
 ]
 
 options = {
-"Where is Isha yoga center located?":{'A': 'Chennai (Rock)','B': 'Mumbai (Paper)','C': 'Coimbatore (Scissor)'},
-"What's the ratio of Indian:Overseas applicants ?":{'A': '1:5 (Rock)','B':'5:1 (Paper)','C': '3:7 (Scissor)'},
-"What's on top of vanashri?":{'A': 'Gana (Rock)','B':'Flower (Paper)','C': 'Om (Scissor)'}
+"Where is Isha yoga center located?":{'A': 'Chennai ','B': 'Mumbai ','C': 'Coimbatore'},
+"What's the ratio of Indian:Overseas applicants ?":{'A': '1:5','B':'5:1','C': '3:7 '},
+"What's on top of vanashri?":{'A':'Monster','B':'Flower','C': 'Om'}
 }
 
 correct_option_mapping = {
@@ -125,37 +125,40 @@ questions_selected = False
 # Create a function to display the current question and options
 def display_question_and_options(frame, qn_no, qn_count):
     question = questions[qn_no]
-    # cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
-    # cv2.putText(frame, "Question SHIVA", (200, 450), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 255), 3, cv2.LINE_AA)
-    # cv2.putText(frame, f"Question SHIVA", (
-    #     200, 450), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
-    cv2.putText(frame, f"Question {qn_count + 1}: {question}", (
-        200, 550), font, 1.8, (0, 255, 255), 3, cv2.LINE_AA)
-
+    cv2.putText(frame, f"{qn_count + 1}: {question}", (
+        500, 1500), font, 4, (255, 255, 255), 4, cv2.LINE_AA)
     display_options(frame, question)
 
 # Create a function to display the current question
-def display_question(frame):
-    question = questions[current_question]
-    cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
+#def display_question(frame):
+#    question = questions[current_question]
+#    cv2.putText(frame, f"Question {current_question + 1}: {question}", (50, 450), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3)
 
 # Create a function to display options on the camera screen
 def display_options(frame, question):
-    y = 200  # Y-coordinate for the first option
-    # y = 50 
+    y = 1750  # Y-coordinate for the first option
+    # y = 50
+    """
     for option_key, option_text in options[question].items():
-        cv2.rectangle(frame, (0, y-70), (1200, y+50), (0, 0, 0), -1)
-        cv2.putText(frame, f"Option {option_key}: {option_text}", (50, y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 0, 0), 3)
+        #cv2.rectangle(frame, (0, y-70), (1200, y+50), (0, 0, 0), -1)
+        cv2.putText(frame, f"Option {option_key}: {option_text}", (500, y), cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
         # cv2.putText(frame, f"Option {option_key}: {option_text}", (
         #     200, y), font, 2, (0, 255, 255), 3, cv2.LINE_AA)
         y += 100  # Adjust the vertical position for the next option
+    """
+    optionA = options[question]['A']
+    optionB = options[question]['B']
+    optionC = options[question]['C']
+    cv2.putText(frame, f"{optionA}", (700, 1790), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 3)
+    cv2.putText(frame, f"{optionB}", (700, 2030), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 3)
+    cv2.putText(frame, f"{optionC}", (2500, 1790), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255),3)
 
 # helper function to show result screen
 def show_winner():
     
     image = cv2.imread("images/youwin.jpg")
-
-    cv2.imshow("Rock Paper Scissors Namaskaram", image)
+    image = cv2.resize(image, (3840, 2160), interpolation=cv2.INTER_CUBIC)
+    cv2.imshow("Game over", image)
 
     # If enter is pressed.
     k = cv2.waitKey(0)
@@ -170,26 +173,69 @@ def show_winner():
 
 # Initial deque list will have 'nothing'.
 de = deque(['nothing'] * smooth_factor, maxlen=smooth_factor)
-
+#kbc_template = cv2.imread("images/kbc.jpeg")
+#kbc_template = cv2.imread("images/kbc_black.png")
+kbc_template = cv2.imread("images/kbc_with_rps.jpeg")
+kbc_x1 = 0
+kbc_x2 = 3840
+kbc_y1 = 2160-850
+kbc_y2 = 2160
+kbc_template = cv2.resize(kbc_template, (3840, 850), interpolation=cv2.INTER_CUBIC)
 # Starting cam
 cap = cv2.VideoCapture(0)
 feature_names = [f'feature{i}' for i in range(210)]  # Create feature names
 while True:
+    #start_image = cv2.imread("images/youwin.jpg")
+    #cv2.namedWindow("Display2", cv2.WINDOW_NORMAL)
+    #cv2.imshow('Display2', start_image)
+    #key = cv2.waitKey(5000)#pauses for 5 seconds before fetching next image
+    #break
+    
+    #im = cv2.imread("images/are_you_ready_1.jpeg")
+    im = cv2.imread("images/are_you_ready_2.webp")
+
+    im = cv2.resize(im, (3840, 2160), interpolation=cv2.INTER_LINEAR)
+    #cv2.namedWindow("foo", cv2.WINDOW_NORMAL)
+    #cv2.setWindowProperty("foo", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    cv2.imshow("foo", im)
+    k = cv2.waitKey(33)
+    if k==27:    # Esc key to stop
+        break
+    elif k==-1:  # normally -1 returned,so don't print it
+        continue
+    else:
+        print(k)
+        cv2.destroyWindow("foo")
+    #cv2.waitKey()
+    
+    #
+    #if key == 27:#if ESC is pressed, exit loop
+    #    cv2.destroyAllWindows()
+    #    break
     ret, frame = cap.read()
     frame = cv2.flip(frame, 1)
-    cv2.rectangle(frame, (0, 505), (1280, 570), (0, 0, 0), -1)
-    cv2.putText(frame, f"How many rounds would you like to play? (1 to 9)",
-                (50, 550), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3, cv2.LINE_AA)
-    # display_question_and_options(frame)
+    #cv2.rectangle(frame, (0, 505), (1280, 570), (0, 0, 0), -1)
+    #cv2.putText(frame, f"How many rounds would you like to play? (1 to 9)",
+    #            (50, 550), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3, cv2.LINE_AA)
+    
 
-    r = cv2.waitKey(25)  # r variable stores the number of rounds of the game
+    #r = cv2.waitKey(25)  # r variable stores the number of rounds of the game
+    r = 51 #r variable stores the number of rounds of the game,r = 49 maps to 1 round
+    #cv2.imshow('Game Start Screen', frame)
+    
+    
+    ######## insert gesture checks ######
+    
+    #cv2.waitKey(5000)
 
-    cv2.imshow('Game Start Screen', frame)
+    #print(cv2.getWindowImageRect('Game Start Screen'))
 
-    print("rounds",r) # for debugging purpose
+
+    #print("rounds",r) # for debugging purpose
     total_questions = r-48 # r = 49 maps to 1 round hence 1 question
+    #change total_questions to be global variable since the number of rounds can be lesser than total questions in bank
     question_sequence = np.random.permutation(total_questions).tolist()
-    print(question_sequence)
+    #print(question_sequence)
     qn_count = 0
     # wait for user to choose no of rounds between 0 to 9
     while 48 < r <= 57:  # Ascii values for 0 & 9
@@ -228,11 +274,14 @@ while True:
             # Create DataFrame from list
             de_df = pd.DataFrame(de_list, columns=['prediction'])
             mode_of_prediction = de_df['prediction'].mode()[0]
+            image = cv2.resize(image, (3840, 2160), interpolation=cv2.INTER_LINEAR)
 
-            cv2.rectangle(image, (0, 0), (1920, 100), (0, 0, 0), -1)
+            cv2.rectangle(image, (0, 0), (3840, 200), (0, 0, 0), -1)
             image = cv2.putText(
-                image, f"Your gesture: {mode_of_prediction}", (700, 60), font, 2, (0, 255, 0), 3)
+                image, f"Your gesture:{mode_of_prediction}", (1250, 140), font, 4, (0, 255, 0), 5)
             #print("here")
+            ## superimpose kbc template
+            image[kbc_y1:kbc_y2, kbc_x1:kbc_x2] = kbc_template
             cv2.imshow('Countdown',image)
             ########### REAL-TIME RECOGNITION END ########
         
@@ -245,12 +294,12 @@ while True:
 
             display_question_and_options(image, qn_no, qn_count)
 
-            cv2.rectangle(image, (0, 900), (1919, 1000), (0, 0, 0), -1)
-            cv2.rectangle(image, (600, 1000), (800, 1080), (0, 0, 0), -1)
-            image = cv2.putText(image, f"Show a gesture (Rock/Paper/Scissor) to select an option", (
-                100, 950), font, 1.8, (0, 255, 0), 3, cv2.LINE_AA) #TODO: change font
+            #cv2.rectangle(image, (0, 900), (1919, 1000), (0, 0, 0), -1)
+            #cv2.rectangle(image, (600, 1000), (800, 1080), (0, 0, 0), -1)
+            #image = cv2.putText(image, f"Show a gesture (Rock/Paper/Scissor) to select an option", (
+            #    100, 950), font, 1.8, (0, 255, 0), 3, cv2.LINE_AA) #TODO: change font
             image = cv2.putText(image, f"{str(TIMER)}", (
-                670, 1020), font, 2, (0, 0, 255), 3, cv2.LINE_AA)
+                3640, 140), font, 4, (0, 0, 255), 3, cv2.LINE_AA)
             cv2.imshow('Countdown', image)
             cv2.waitKey(25)
 
@@ -290,11 +339,11 @@ while True:
             # Create DataFrame from list
             de_df = pd.DataFrame(de_list, columns=['prediction'])
             mode_of_prediction = de_df['prediction'].mode()[0]
-
-            cv2.rectangle(image, (0, 0), (1920, 100), (0, 0, 0), -1)
+            image = cv2.resize(image, (3840, 2160), interpolation=cv2.INTER_LINEAR)
+            
+            cv2.rectangle(image, (0, 0), (3840, 200), (0, 0, 0), -1)
             image = cv2.putText(
-                image, f"Your gesture: {mode_of_prediction}", (700, 60), font, 2, (0, 255, 0), 3)
-
+                image, f"Your gesture: {mode_of_prediction}", (1250, 140), font, 4, (255, 0, 0), 5)
             user_move = mode_of_prediction
             computer_move = choice(['ROCK', 'PAPER', 'SCISSOR'])
 
@@ -307,22 +356,20 @@ while True:
             #    image, f"Computer's move: {computer_move}", (20, 30), font, 1, (0, 255, 0), 3)
 
             # Adding black background in bottom3
-            cv2.rectangle(image, (0, 550), (1280, 720), (0, 0, 0), -1)
+            cv2.rectangle(image, (0, 1560), (3840, 2160), (0, 0, 0), -1)
 
             image = cv2.putText(
-                image, f"Result: {option_selected_correctly}", (450, 600), font, 1.5, (0, 255, 0), 3)
+                image, f"{option_selected_correctly}", (1600, 1690), font, 4, (0, 255, 0), 4)
             # image = cv2.putText(image, f"Press '2n' to start next round", (150, 600), font, 2, (0, 255, 0), 3)
-            if winner == "You won!":
+            if option_selected_correctly != "Incorrect :/":
                 uScore += 1
-            elif winner == "Computer won":
-                cScore += 1
 
             image = cv2.putText(
-                image, f"Your Score: {uScore}", (800, 650), font, 1, (0, 255, 0), 3)
+                image, f"Your Score: {uScore}", (1600, 1860), font, 3, (0, 255, 0), 3)
             image = cv2.putText(
-                image, f"Press 'Enter' for next round", (100, 700), font, 1, (0, 255, 0), 3)
+                image, f"Press 'Enter' for next round", (200, 2060), font, 3, (0, 255, 0), 3)
             image = cv2.putText(
-                image, f"Attention is all you need", (950, 700), font, 1, (0, 255, 0), 2)
+                image, f"Attention is all you need", (3000, 2060), font, 2, (0, 255, 0), 3)
             #display_computer_move(computer_move, image)  # Function call
             
             qn_count += 1
