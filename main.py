@@ -45,9 +45,14 @@ def video_render(video_path):
     cv2.destroyAllWindows()
 
 
-np_frames, extensions, image_specifications = gif2numpy.convert("images/trump.gif")
-print(len(np_frames))
-print(image_specifications['Image Size'])
+np_frames_incorrect, extensions_incorrect, image_specifications_incorrect = gif2numpy.convert("images/trump.gif")
+print(len(np_frames_incorrect))
+print(image_specifications_incorrect['Image Size'])
+
+np_frames_correct, extensions_correct, image_specifications_correct = gif2numpy.convert("images/obama_right_3.gif")
+print(len(np_frames_correct))
+print(image_specifications_correct['Image Size'])
+
 """
 for i in range(len(np_frames)):
     cv2.imshow("np_image", np_frames[i])
@@ -63,7 +68,7 @@ exit()
 # Heart of the game
 model_name = 'hand_model.sav'
 
-countdown_time = 10
+countdown_time = 5
 font = cv2.FONT_HERSHEY_SIMPLEX
 hands = hand_detection_module.HandDetector(max_hands=num_hand)
 model = pickle.load(open(model_name, 'rb')) # Note that hand_model.sav is now loaded in variable 'model'
@@ -101,9 +106,9 @@ def findout_winner(user_move, computer_move):
 def check_selection(user_move, question): #, question <-- to ADD
     # Dictionary to store the winning combinations
     gesture_to_options = {
-        'ROCK': 'A',
+        'SCISSOR': 'A',
         'PAPER': 'B',
-        'SCISSOR': 'C',
+        'ROCK': 'C',
     }
     selected_option = gesture_to_options[user_move]
     correct_option = correct_option_mapping[question]
@@ -215,12 +220,50 @@ def show_winner():
     else:
         return False
 
+def gesture_trial(cap):
+        i = 0
+        while i < smooth_factor:
+            success, moveImg = cap.read()
+            moveImg = cv2.flip(moveImg, 1)
+            image, list_of_landmarks = hands.find_hand_landmarks(
+                moveImg, draw_landmarks=True)
+            height, width, _ = image.shape
+            all_distance = calc_all_distance(
+                height, width, list_of_landmarks)
+            # Convert all_distance to a DataFrame and set column names
+            all_distance_df = pd.DataFrame(
+                [all_distance], columns=feature_names)
+
+            # Use the DataFrame for prediction
+            prediction = rps(model.predict(all_distance_df)[0])
+            de.appendleft(prediction)
+            i += 1
+
+        de_list = list(de)  # Convert deque to list
+        # Create DataFrame from list
+        de_df = pd.DataFrame(de_list, columns=['prediction'])
+        mode_of_prediction = de_df['prediction'].mode()[0]
+        image = cv2.resize(image, (3840, 2160), interpolation=cv2.INTER_LINEAR)
+
+        cv2.rectangle(image, (0, 0), (3840, 200), (0, 0, 0), -1)
+        image = cv2.putText(image, f"Your gesture:", (1250, 140), font, 4, (0, 165, 255), 5)
+        user_move = mode_of_prediction
+        image = cv2.putText(image, f"{mode_of_prediction}", (2100, 140), font, 4, (255, 255, 255), 5)
+
+        #print("here")
+        ## superimpose kbc template
+        #image[kbc_y1:kbc_y2, kbc_x1:kbc_x2] = kbc_template
+        cv2.imshow('Countdown',image)
+
+
 
 # Initial deque list will have 'nothing'.
 de = deque(['nothing'] * smooth_factor, maxlen=smooth_factor)
 #kbc_template = cv2.imread("images/kbc.jpeg")
 #kbc_template = cv2.imread("images/kbc_black.png")
-kbc_template = cv2.imread("images/kbc_with_rps.jpeg")
+#kbc_template = cv2.imread("images/kbc_with_rps.jpeg")
+kbc_template = cv2.imread("images/kbc_with_maroon.jpeg")
+
 kbc_x1 = 0
 kbc_x2 = 3840
 kbc_y1 = 2160-850
@@ -260,6 +303,7 @@ while True:
     #    break
     ret, frame = cap.read()
     frame = cv2.flip(frame, 1)
+    
     #cv2.rectangle(frame, (0, 505), (1280, 570), (0, 0, 0), -1)
     #cv2.putText(frame, f"How many rounds would you like to play? (1 to 9)",
     #            (50, 550), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 255), 3, cv2.LINE_AA)
@@ -283,6 +327,8 @@ while True:
     question_sequence = np.random.permutation(total_questions).tolist()
     #print(question_sequence)
     qn_count = 0
+    
+    
     # wait for user to choose no of rounds between 0 to 9
     while 48 < r <= 57:  # Ascii values for 0 & 9
         cv2.destroyAllWindows()
@@ -322,7 +368,7 @@ while True:
             mode_of_prediction = de_df['prediction'].mode()[0]
             image = cv2.resize(image, (3840, 2160), interpolation=cv2.INTER_LINEAR)
 
-            cv2.rectangle(image, (0, 0), (3840, 200), (0, 0, 0), -1)
+            cv2.rectangle(image, (0, 0), (3840, 200), (15, 29, 95), -1)
             image = cv2.putText(image, f"Your gesture:", (1250, 140), font, 4, (0, 165, 255), 5)
             user_move = mode_of_prediction
             image = cv2.putText(image, f"{mode_of_prediction}", (2100, 140), font, 4, (255, 255, 255), 5)
@@ -342,11 +388,9 @@ while True:
 
             display_question_and_options(image, qn_no, qn_count)
 
-            #cv2.rectangle(image, (0, 900), (1919, 1000), (0, 0, 0), -1)
-            #cv2.rectangle(image, (600, 1000), (800, 1080), (0, 0, 0), -1)
-            #image = cv2.putText(image, f"Show a gesture (Rock/Paper/Scissor) to select an option", (
-            #    100, 950), font, 1.8, (0, 255, 0), 3, cv2.LINE_AA) #TODO: change font
-            image = cv2.putText(image, f"{str(TIMER)}", (3640, 140), font, 4, (0, 0, 255), 3, cv2.LINE_AA)
+            image = cv2.putText(image, "00:", (3440, 140), font, 4, (0, 0, 255), 3, cv2.LINE_AA)
+            image = cv2.putText(image, f"0{str(TIMER)}", (3640, 140), font, 4, (0, 0, 255), 3, cv2.LINE_AA)
+
             cv2.imshow('Countdown', image)
             cv2.waitKey(25)
 
@@ -388,7 +432,7 @@ while True:
             mode_of_prediction = de_df['prediction'].mode()[0]
             image = cv2.resize(image, (3840, 2160), interpolation=cv2.INTER_LINEAR)
             
-            cv2.rectangle(image, (0, 0), (3840, 200), (0, 0, 0), -1)
+            cv2.rectangle(image, (0, 0), (3840, 200), (15, 29, 95), -1)
             image = cv2.putText(image, f"Your gesture:", (1250, 140), font, 4, (0, 165, 255), 5)
             user_move = mode_of_prediction
             image = cv2.putText(image, f"{mode_of_prediction}", (2100, 140), font, 4, (255, 255, 255), 5)
@@ -401,12 +445,15 @@ while True:
             #    image, f"Computer's move: {computer_move}", (20, 30), font, 1, (0, 255, 0), 3)
 
             # Adding black background in bottom3
-            cv2.rectangle(image, (0, 1560), (3840, 2160), (0, 0, 0), -1)
+            cv2.rectangle(image, (0, 1560), (3840, 2160), (15, 29, 95), -1)
 
-            image = cv2.putText(image, f"{option_selected_correctly}", (1600, 1690), font, 4, (0, 255, 0), 4)
+            #image = cv2.putText(image, f"{option_selected_correctly}", (1600, 1690), font, 4, (0, 255, 0), 4)
             # image = cv2.putText(image, f"Press '2n' to start next round", (150, 600), font, 2, (0, 255, 0), 3)
             if option_selected_correctly != "Incorrect :/":
                 uScore += 100
+                np_frames = np_frames_correct
+            else:
+                np_frames = np_frames_incorrect
             
             image = cv2.putText(image, f"Your Score:", (1600, 1860), font, 3, (0, 165, 255), 3)
             image = cv2.putText(image, f" {uScore}", (2100, 1860), font, 3, (255, 255, 255), 3)
@@ -418,8 +465,11 @@ while True:
             r -= 1
             print(r-48)
             #cv2.imshow('Game', image)
+            
             for i in range(len(np_frames)-1):
-                image[1500:1787, 2000:2480] = np_frames[i]
+                np_frames[i] = cv2.resize(np_frames[i], (1200,800))
+
+                image[450:1250, 1300:2500] = np_frames[i]
                 #cv2.imshow("np_image", np_frames[i])
                 cv2.imshow("np_image", image)
                 cv2.waitKey(100)
@@ -427,6 +477,7 @@ while True:
                 #    break
                 cv2.destroyWindow("np_image")
             cv2.imshow("np_image", image)
+
             n = cv2.waitKey(3000)
             if n == 13:
                 cv2.destroyAllWindows()
