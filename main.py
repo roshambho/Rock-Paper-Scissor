@@ -9,9 +9,54 @@ from scipy import stats as st
 from collections import deque
 import numpy as np
 import pandas as pd
+import gif2numpy
 
-# GPT START
+def video_render(video_path):
+    vid_capture = cv2.VideoCapture(video_path)
+     
+    if (vid_capture.isOpened() == False):
+      print("Error opening the video file")
+    # Read fps and frame count
+    else:
+        # Get frame rate information
+        # You can replace 5 with CAP_PROP_FPS as well, they are enumerations
+        fps = vid_capture.get(5)
+        print('Frames per second : ', fps,'FPS')
+         
+        # Get frame count
+        # You can replace 7 with CAP_PROP_FRAME_COUNT as well, they are enumerations
+        frame_count = vid_capture.get(7)
+        print('Frame count : ', frame_count)
+         
+    while(vid_capture.isOpened()):
+        # vid_capture.read() methods returns a tuple, first element is a bool
+        # and the second is frame
+        ret, frame = vid_capture.read()
+        if ret == True:
+            cv2.imshow('Frame',frame)
+            # 20 is in milliseconds, try to increase the value, say 50 and observe
+            key = cv2.waitKey(20)
+         
+            if key == ord('q'):
+                break
+        else:
+            break
+    vid_capture.release()
+    cv2.destroyAllWindows()
 
+
+np_frames, extensions, image_specifications = gif2numpy.convert("images/trump.gif")
+print(len(np_frames))
+print(image_specifications['Image Size'])
+"""
+for i in range(len(np_frames)):
+    cv2.imshow("np_image", np_frames[i])
+    cv2.waitKey(100)
+    #if k == 27:
+    #    break
+    cv2.destroyWindow("np_image")
+exit()
+"""
 
 
 
@@ -182,6 +227,7 @@ kbc_y1 = 2160-850
 kbc_y2 = 2160
 kbc_template = cv2.resize(kbc_template, (3840, 850), interpolation=cv2.INTER_CUBIC)
 # Starting cam
+#video_render('images/telepoorte_fnl.mp4')
 cap = cv2.VideoCapture(0)
 feature_names = [f'feature{i}' for i in range(210)]  # Create feature names
 while True:
@@ -190,7 +236,7 @@ while True:
     #cv2.imshow('Display2', start_image)
     #key = cv2.waitKey(5000)#pauses for 5 seconds before fetching next image
     #break
-    
+    #video_render('images/telepoorte_fnl.mp4')
     #im = cv2.imread("images/are_you_ready_1.jpeg")
     im = cv2.imread("images/are_you_ready_2.webp")
 
@@ -277,8 +323,10 @@ while True:
             image = cv2.resize(image, (3840, 2160), interpolation=cv2.INTER_LINEAR)
 
             cv2.rectangle(image, (0, 0), (3840, 200), (0, 0, 0), -1)
-            image = cv2.putText(
-                image, f"Your gesture:{mode_of_prediction}", (1250, 140), font, 4, (0, 255, 0), 5)
+            image = cv2.putText(image, f"Your gesture:", (1250, 140), font, 4, (0, 165, 255), 5)
+            user_move = mode_of_prediction
+            image = cv2.putText(image, f"{mode_of_prediction}", (2100, 140), font, 4, (255, 255, 255), 5)
+
             #print("here")
             ## superimpose kbc template
             image[kbc_y1:kbc_y2, kbc_x1:kbc_x2] = kbc_template
@@ -298,8 +346,7 @@ while True:
             #cv2.rectangle(image, (600, 1000), (800, 1080), (0, 0, 0), -1)
             #image = cv2.putText(image, f"Show a gesture (Rock/Paper/Scissor) to select an option", (
             #    100, 950), font, 1.8, (0, 255, 0), 3, cv2.LINE_AA) #TODO: change font
-            image = cv2.putText(image, f"{str(TIMER)}", (
-                3640, 140), font, 4, (0, 0, 255), 3, cv2.LINE_AA)
+            image = cv2.putText(image, f"{str(TIMER)}", (3640, 140), font, 4, (0, 0, 255), 3, cv2.LINE_AA)
             cv2.imshow('Countdown', image)
             cv2.waitKey(25)
 
@@ -342,12 +389,10 @@ while True:
             image = cv2.resize(image, (3840, 2160), interpolation=cv2.INTER_LINEAR)
             
             cv2.rectangle(image, (0, 0), (3840, 200), (0, 0, 0), -1)
-            image = cv2.putText(
-                image, f"Your gesture: {mode_of_prediction}", (1250, 140), font, 4, (255, 0, 0), 5)
+            image = cv2.putText(image, f"Your gesture:", (1250, 140), font, 4, (0, 165, 255), 5)
             user_move = mode_of_prediction
-            computer_move = choice(['ROCK', 'PAPER', 'SCISSOR'])
-
-            winner = findout_winner(user_move, computer_move)
+            image = cv2.putText(image, f"{mode_of_prediction}", (2100, 140), font, 4, (255, 255, 255), 5)
+            #winner = findout_winner(user_move, computer_move)
 
             option_selected_correctly = check_selection(user_move,question) # RRAM
 
@@ -358,25 +403,31 @@ while True:
             # Adding black background in bottom3
             cv2.rectangle(image, (0, 1560), (3840, 2160), (0, 0, 0), -1)
 
-            image = cv2.putText(
-                image, f"{option_selected_correctly}", (1600, 1690), font, 4, (0, 255, 0), 4)
+            image = cv2.putText(image, f"{option_selected_correctly}", (1600, 1690), font, 4, (0, 255, 0), 4)
             # image = cv2.putText(image, f"Press '2n' to start next round", (150, 600), font, 2, (0, 255, 0), 3)
             if option_selected_correctly != "Incorrect :/":
-                uScore += 1
-
-            image = cv2.putText(
-                image, f"Your Score: {uScore}", (1600, 1860), font, 3, (0, 255, 0), 3)
-            image = cv2.putText(
-                image, f"Press 'Enter' for next round", (200, 2060), font, 3, (0, 255, 0), 3)
-            image = cv2.putText(
-                image, f"Attention is all you need", (3000, 2060), font, 2, (0, 255, 0), 3)
+                uScore += 100
+            
+            image = cv2.putText(image, f"Your Score:", (1600, 1860), font, 3, (0, 165, 255), 3)
+            image = cv2.putText(image, f" {uScore}", (2100, 1860), font, 3, (255, 255, 255), 3)
+            #image = cv2.putText(image, f"Press 'Enter' for next round", (200, 2060), font, 3, (0, 255, 0), 3)
+            #image = cv2.putText(image, f"Attention is all you need", (3000, 2060), font, 2, (0, 255, 0), 3)
             #display_computer_move(computer_move, image)  # Function call
             
             qn_count += 1
             r -= 1
             print(r-48)
-            cv2.imshow('Game', image)
-            n = cv2.waitKey(0)
+            #cv2.imshow('Game', image)
+            for i in range(len(np_frames)-1):
+                image[1500:1787, 2000:2480] = np_frames[i]
+                #cv2.imshow("np_image", np_frames[i])
+                cv2.imshow("np_image", image)
+                cv2.waitKey(100)
+                #if k == 27:
+                #    break
+                cv2.destroyWindow("np_image")
+            cv2.imshow("np_image", image)
+            n = cv2.waitKey(3000)
             if n == 13:
                 cv2.destroyAllWindows()
             if r == 48:
