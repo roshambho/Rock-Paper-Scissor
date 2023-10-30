@@ -45,7 +45,7 @@ def video_render(video_path):
     vid_capture.release()
     cv2.destroyAllWindows()
 
-
+"""
 np_frames_incorrect, extensions_incorrect, image_specifications_incorrect = gif2numpy.convert("images/trump.gif")
 print(len(np_frames_incorrect))
 print(image_specifications_incorrect['Image Size'])
@@ -54,7 +54,7 @@ np_frames_correct, extensions_correct, image_specifications_correct = gif2numpy.
 print(len(np_frames_correct))
 print(image_specifications_correct['Image Size'])
 
-
+"""
 
 
 
@@ -147,7 +147,7 @@ questions = [
 
   "On an average, how many requests do we get daily on Sadhanapada App ?",
 
-  "Guess the no. of requests received on the Sadhanapada app since orientation ?",
+  "Guess the no. of requests received on the Sadhanapada app since orientation",
 
   "How many Ekadashis have occured in Sadhanapada 2023 ?",
 
@@ -177,9 +177,9 @@ questions = [
 
   "Guess the distance covered in 5 Ekadashi Pradakshinas ?",
 
-  "Guess the no. of people in the Morning Sadhana icon on the Sadhanapada app",
+  "Guess the # of people in the Morning Sadhana icon on the Sadhanapada app",
 
-  "Which asana is depicted in the Morning Sadhana icon on the Sadhanapada app ?",
+  "Which asana is depicted in the Morning Sadhana icon on the Sadhanapada app",
 
   "What is the Sadhanapada application's helpline number ?",
 
@@ -201,7 +201,7 @@ options = {
  
 "On an average, how many requests do we get daily on Sadhanapada App ?": {'A': '175','B': '184 ','C': '125'},
 
-"Guess the no. of requests received on the Sadhanapada app since orientation ?": {'A': '25231','B': '20193 ','C': '24773'},
+"Guess the no. of requests received on the Sadhanapada app since orientation": {'A': '25231','B': '20193 ','C': '24773'},
  
 "How many Ekadashis have occured in Sadhanapada 2023 ?": {'A': '8','B': '10 ','C': '9'},
  
@@ -233,9 +233,9 @@ options = {
  
 "Guess the distance covered in 5 Ekadashi Pradakshinas ?": {'A': '15','B': '10','C': 'Until your legs ache'},
  
- "Guess the no. of people in the Morning Sadhana icon on the Sadhanapada app": {'A': '2','B': '3','C': '6'},
+ "Guess the # of people in the Morning Sadhana icon on the Sadhanapada app": {'A': '2','B': '3','C': '6'},
 
- "Which asana is depicted in the Morning Sadhana icon on the Sadhanapada app ?": {'A': 'Urdhvasana','B': 'Trikonasana','C': 'Vrikshasana'},
+ "Which asana is depicted in the Morning Sadhana icon on the Sadhanapada app": {'A': 'Urdhvasana','B': 'Trikonasana','C': 'Vrikshasana'},
 
  "What is the Sadhanapada application's helpline number ?": {'A': '8300098777','B': '8300083111','C': '9442504648'},
 
@@ -257,7 +257,7 @@ correct_option_mapping = {
 
   "On an average, how many requests do we get daily on Sadhanapada App ?": 'A',
 
-  "Guess the no. of requests received on the Sadhanapada app since orientation ?": 'C',
+  "Guess the no. of requests received on the Sadhanapada app since orientation": 'C',
 
   "How many departments are currently taking support of Sadhanapadas ?": 'A',
 
@@ -289,9 +289,9 @@ correct_option_mapping = {
 
   "Guess the distance covered in 5 Ekadashi Pradakshinas ?": 'A',
 
-  "Guess the no. of people in the Morning Sadhana icon on the Sadhanapada app": 'B',
+  "Guess the # of people in the Morning Sadhana icon on the Sadhanapada app": 'B',
 
-  "Which asana is depicted in the Morning Sadhana icon on the Sadhanapada app ?": 'C',
+  "Which asana is depicted in the Morning Sadhana icon on the Sadhanapada app": 'C',
 
   "What is the Sadhanapada application's helpline number ?": 'A',
 
@@ -314,7 +314,7 @@ correct_option_mapping = {
 def display_question_and_options(frame, qn_no, qn_count):
     question = questions[qn_no]
     cv2.putText(frame, f"{question}", (
-        400, 1500), font, 2.5, (255, 255, 255), 4, cv2.LINE_AA)
+        280, 1500), font, 2.5, (255, 255, 255), 4, cv2.LINE_AA)
     display_options(frame, question)
 
 # Create a function to display the current question
@@ -340,6 +340,44 @@ def display_options(frame, question):
     cv2.putText(frame, f"{optionA}", (700, 1810), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 3)
     cv2.putText(frame, f"{optionB}", (700, 2050), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255), 3)
     cv2.putText(frame, f"{optionC}", (2500, 1810), cv2.FONT_HERSHEY_SIMPLEX, 3, (255, 255, 255),3)
+
+def embed_gif_on_image(background_image, gif_path, x1, x2, y1, y2):
+    # Load the background image
+    image = background_image
+
+    # Load the GIF using OpenCV
+    cap = cv2.VideoCapture(gif_path)
+
+    # Check if the GIF loaded successfully
+    if not cap.isOpened():
+        print("Error: Could not open GIF file.")
+        return
+
+    # Read and place each frame of the GIF on the background
+    while True:
+        ret, frame = cap.read()
+
+        # Check if the end of the GIF is reached
+        if not ret:
+            break
+
+        # Place the GIF frame on the background image
+        image[x1:x2, y1:y2] = cv2.resize(frame, (1200,800))
+
+        # Display the composite image
+        cv2.imshow('Composite Image', image)
+
+        # Adjust the delay (ms) between frames (e.g., 100ms)
+        cv2.waitKey(100)
+
+    # Release the video capture object and close the display window
+    cap.release()
+    #cv2.destroyAllWindows()
+
+
+
+
+
 
 # helper function to show result screen
 def show_winner(final_score, final_score_image):
@@ -373,7 +411,7 @@ def gesture_trial(cap):
     #cv2.destroyWindow('trial_start')
     symbols = ['images/ROCK.png', 'images/SCISSOR.png', 'images/PAPER.png']
     practice_time_image =  cv2.resize(cv2.imread("images/practice time.png"), (1558, 154)) #(1850, 300)
-    symbols = [ 'images/scissor_1.jpg',  'images/paper_1.jpg', 'images/rock_1.jpg',]
+    #symbols = [ 'images/scissor_1.jpg',  'images/paper_1.jpg', 'images/rock_1.jpg',]
     symbols = [ 'images/scissor_m.jpg',  'images/paper_m.jpg', 'images/rock_m.jpg',]
     count_round = 0
     #count_trial = 0
@@ -525,6 +563,7 @@ while True:
 
     #r = cv2.waitKey(25)  # r variable stores the number of rounds of the game
     #change to 4
+    # SET R TO 52 FOR 4 ROUNDS (FROM ANMOL)
     r = 52 #r variable stores the number of rounds of the game,r = 49 maps to 1 round
     #cv2.imshow('Game Start Screen', frame)
     
@@ -541,7 +580,7 @@ while True:
     total_questions = 24 # r = 49 maps to 1 round hence 1 question
     #change total_questions to be global variable since the number of rounds can be lesser than total questions in bank
     question_sequence = np.random.permutation(total_questions).tolist()
-    #print(question_sequence)
+    print("QN_SEQ", question_sequence)
     qn_count = 0
     print(len(questions))
     print(len(correct_option_mapping))
@@ -674,11 +713,13 @@ while True:
             # image = cv2.putText(image, f"Press '2n' to start next round", (150, 600), font, 2, (0, 255, 0), 3)
             if option_selected_correctly != "Incorrect :/":
                 uScore += 100
-                np_frames = np_frames_correct
+                #np_frames = np_frames_correct
+                gif_path = "images/yes.gif"
                 image[1560:2160, 0:3840] = correct_banner
 
             else:
-                np_frames = np_frames_incorrect
+                #np_frames = np_frames_incorrect
+                gif_path = "images/no.gif"
                 image[1560:2160, 0:3840] = incorrect_banner
 
             image[1940:2160, 1654:2226] = sadhanapada_logo
@@ -693,7 +734,11 @@ while True:
             r -= 1
             print(r-48)
             #cv2.imshow('Game', image)
-            
+            ############# function to embed GIF
+            embed_gif_on_image(image, gif_path, 450, 1250, 1300, 2500)
+            ############
+            # old code using gif2numpy
+            """
             for i in range(len(np_frames)-1):
                 np_frames[i] = cv2.resize(np_frames[i], (1200,800))
 
@@ -705,7 +750,7 @@ while True:
                 #    break
                 cv2.destroyWindow("np_image")
             cv2.imshow("np_image", image)
-
+            """
             n = cv2.waitKey(1000)
             if n == 13:
                 cv2.destroyAllWindows()
