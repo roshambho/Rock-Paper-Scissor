@@ -501,6 +501,8 @@ kbc_template = cv2.imread("images/kbc_with_maroon3.jpeg")
 #sadhanapada_logo = cv2.resize(cv2.imread("images/sadhanapada_logo2.png"),(572,220), interpolation=cv2.INTER_CUBIC)
 sadhanapada_logo = cv2.resize(cv2.imread("images/sadhanapada_HD.jpg"),(572,220), interpolation=cv2.INTER_CUBIC)
 game_finish_still = cv2.resize(cv2.imread("images/game_end_still_image.png"),(3840,2160), interpolation=cv2.INTER_LINEAR)
+game_start_still = cv2.resize(cv2.imread("images/game_start_still_image.png"),(3840,2160), interpolation=cv2.INTER_LINEAR)
+
 correct_banner = cv2.imread("images/Correct.jpg")
 incorrect_banner = cv2.imread("images/Incorrect.jpg")
 
@@ -519,7 +521,8 @@ feature_names = [f'feature{i}' for i in range(210)]  # Create feature names
 while True:
     #game_start_display(np_frames_game_start)
     video_render('images/game_start_final.mp4')
-
+    cv2.imshow("Start",game_start_still)
+    cv2.waitKey(0)
     gesture_trial(cap)
     #cv2.destroyAllWindows()
     #start_image = cv2.imread("images/youwin.jpg")
