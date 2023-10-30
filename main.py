@@ -61,8 +61,8 @@ print(image_specifications_correct['Image Size'])
 # Heart of the game
 model_name = 'hand_model.sav'
 
-countdown_time = 5
-font = cv2.FONT_HERSHEY_SIMPLEX
+countdown_time = 9
+font = cv2.FONT_HERSHEY_COMPLEX
 hands = hand_detection_module.HandDetector(max_hands=num_hand)
 model = pickle.load(open(model_name, 'rb')) # Note that hand_model.sav is now loaded in variable 'model'
 TIMER = int(countdown_time)
@@ -144,25 +144,167 @@ def display_computer_move(computer_move_name, image):
 #def display_kbc_bar
 # Define a list of questions
 questions = [
-    "Guess the no. of requests received on the Sadhanapada app since orientation",
-    "Where is Isha yoga center located?",
-    "What's the ratio of Indian:Overseas applicants ?",
-    "What's on top of vanashri?"
+
+  "On an average, how many requests do we get daily on Sadhanapada App ?",
+
+  "Guess the no. of requests received on the Sadhanapada app since orientation ?",
+
+  "How many Ekadashis have occured in Sadhanapada 2023 ?",
+
+  "How many video calls does the applications team make per day ?",
+
+  "How many Sadhanapada batches have culminated till now ?",
+
+  "In Sadhanapada 2023, how many countries do the participants come from ?",
+
+  "How many overseas applications do we receive each year on an average ?",
+
+  "Who amongst the following celebrities have attended Sadhanapada ?",
+
+  "How many Sadhanapada applications did we receive this year ?",
+
+  "How many countries are Sadhanapada alumni spread across ?",
+
+  "What's the first wake-up chant in the Sadhanapada stay areas ?",
+
+  "What's the second wake-up chant in the Sadhanapada stay areas ?",
+
+  "What/who comes after the last wake-up music in the morning ?",
+
+  "How many Indian states are represented in Sadhanapada ?",
+
+  "What's the upper age limit to be eligible for Sadhanapada ?",
+
+  "Guess the distance covered in 5 Ekadashi Pradakshinas ?",
+
+  "Guess the no. of people in the Morning Sadhana icon on the Sadhanapada app",
+
+  "Which asana is depicted in the Morning Sadhana icon on the Sadhanapada app ?",
+
+  "What is the Sadhanapada application's helpline number ?",
+
+  "Which programs are a prerequisite for Sadhanapada ?",
+
+  "What is the age criteria to be eligible for Sadhanapada ?",
+
+  "Which is the first batch of Sadhanapada ?",
+
+  "What was the number of participants in the first batch ?",
+
+  "How many times has mega cleaning happened till now ?"
+   
 ]
 
 options = {
-"Guess the no. of requests received on the Sadhanapada app since orientation":{'A': 'Chennai ','B': 'Mumbai ','C': 'Coimbatore'},
-"What's the ratio of Indian:Overseas applicants ?":{'A': '1:5','B':'5:1','C': '3:7 '},
-"What's on top of vanashri?":{'A':'Monster','B':'Flower','C': 'Om'},
-"How many video calls does the applications team make per day?":{'A':'60','B':'70','C': '50'}
+
+"Where is Isha yoga center located?":{'A': 'Chennai ','B': 'Mumbai ','C': 'Coimbatore'},
+ 
+"On an average, how many requests do we get daily on Sadhanapada App ?": {'A': '175','B': '184 ','C': '125'},
+
+"Guess the no. of requests received on the Sadhanapada app since orientation ?": {'A': '25231','B': '20193 ','C': '24773'},
+ 
+"How many Ekadashis have occured in Sadhanapada 2023 ?": {'A': '8','B': '10 ','C': '9'},
+ 
+
+
+"How many video calls does the applications team make per day ?": {'A': '53','B': '64','C': '73'},
+ 
+"How many Sadhanapada batches have culminated till now ?": {'A': '5','B': '4','C': '6'},
+
+"In Sadhanapada 2023, how many countries do the participants come from ?": {'A': '96','B': '158','C': '120'},
+ 
+"How many overseas applications do we receive each year on an average ?": {'A': '7000','B': '6000','C': '9000'},
+
+"Who amongst the following celebrities have attended Sadhanapada ?": {'A':'Machel Montano','B':'MachineGun Kelly','C':'Kangana Ranaut'},
+
+"How many Sadhanapada applications did we receive this year ?": {'A': '31000','B': '29000','C': '23000'},
+
+"How many countries are Sadhanapada alumni spread across ?": {'A': '153','B': '167','C': '191'},
+ 
+"What's the first wake-up chant in the Sadhanapada stay areas ?": {'A': 'Gurupadukabhyam','B': 'Aum namah shivaya','C': 'Shivoham'},
+ 
+"What's the second wake-up chant in the Sadhanapada stay areas ?": {'A': 'Uyirnokkam','B': 'Shivoham','C': 'Aum namah shivaya'},
+ 
+ "What/who comes after the last wake-up music in the morning ?": {'A': 'GuruPooja','B': 'Yogasana','C': 'Head to washroom'},
+
+ "How many Indian states are represented in Sadhanapada ?": {'A': '23','B': '28','C': '21'},
+
+"What's the upper age limit to be eligible for Sadhanapada ?": {'A': '83','B': '77','C': 'No Limit'},
+ 
+"Guess the distance covered in 5 Ekadashi Pradakshinas ?": {'A': '15','B': '10','C': 'Until your legs ache'},
+ 
+ "Guess the no. of people in the Morning Sadhana icon on the Sadhanapada app": {'A': '2','B': '3','C': '6'},
+
+ "Which asana is depicted in the Morning Sadhana icon on the Sadhanapada app ?": {'A': 'Urdhvasana','B': 'Trikonasana','C': 'Vrikshasana'},
+
+ "What is the Sadhanapada application's helpline number ?": {'A': '8300098777','B': '8300083111','C': '9442504648'},
+
+ "Which programs are a prerequisite for Sadhanapada ?": {'A': 'IE & Yogasanas','B': 'IE & Surya-Kriya','C': 'Inner-Engineering'},
+
+ "What is the age criteria to be eligible for Sadhanapada ?": {'A': '21','B': '18','C': '16'},
+
+ "Which is the first batch of Sadhanapada ?": {'A': '2019','B': '2017','C': '2018'},
+
+ "What was the number of participants in the first batch ?": {'A': '251-300','B': '200-250','C': '150-199'},
+
+ "How many times has mega cleaning happened till now ?": {'A': '5','B': '3','C': '4'}
 
 }
 
 correct_option_mapping = {
-"Guess the no. of requests received on the Sadhanapada app since orientation":'C',
-"What's the ratio of Indian:Overseas applicants ?":'B',
-"What's on top of vanashri?":'A',
-"How many video calls does the applications team make per day?":'B'
+
+  "Where is Isha yoga center located?":'C',
+
+  "On an average, how many requests do we get daily on Sadhanapada App ?": 'A',
+
+  "Guess the no. of requests received on the Sadhanapada app since orientation ?": 'C',
+
+  "How many departments are currently taking support of Sadhanapadas ?": 'A',
+
+  "How many Ekadashis have occured in Sadhanapada 2023 ?": 'C',
+
+  "How many video calls does the applications team make per day ?": 'C',
+
+  "How many Sadhanapada batches have culminated till now ?": 'A',
+
+  "In Sadhanapada 2023, how many countries do the participants come from ?": 'B',
+
+  "How many overseas applications do we receive each year on an average ?": 'B',
+
+  "Who amongst the following celebrities have attended Sadhanapada ?": 'A',
+
+  "How many Sadhanapada applications did we receive this year ?": 'B',
+
+  "How many countries are Sadhanapada alumni spread across ?": 'C',
+
+  "What's the first wake-up chant in the Sadhanapada stay areas ?": 'A',
+
+  "What's the second wake-up chant in the Sadhanapada stay areas ?": 'B',
+
+  "What/who comes after the last wake-up music in the morning ?": 'A',
+
+  "How many Indian states are represented in Sadhanapada ?": 'B',
+
+  "What's the upper age limit to be eligible for Sadhanapada ?": 'C',
+
+  "Guess the distance covered in 5 Ekadashi Pradakshinas ?": 'A',
+
+  "Guess the no. of people in the Morning Sadhana icon on the Sadhanapada app": 'B',
+
+  "Which asana is depicted in the Morning Sadhana icon on the Sadhanapada app ?": 'C',
+
+  "What is the Sadhanapada application's helpline number ?": 'A',
+
+  "Which programs are a prerequisite for Sadhanapada ?": 'C',
+
+  "What is the age criteria to be eligible for Sadhanapada ?": 'B',
+
+  "Which is the first batch of Sadhanapada ?": 'C',
+
+  "What was the number of participants in the first batch ?": 'B',
+
+  "How many times has mega cleaning happened till now ?": 'C'
+
 }
 
 
@@ -233,12 +375,16 @@ def gesture_trial(cap):
     practice_time_image =  cv2.resize(cv2.imread("images/practice time.png"), (1558, 154)) #(1850, 300)
     symbols = [ 'images/scissor_1.jpg',  'images/paper_1.jpg', 'images/rock_1.jpg',]
     symbols = [ 'images/scissor_m.jpg',  'images/paper_m.jpg', 'images/rock_m.jpg',]
-
+    count_round = 0
     #count_trial = 0
     for sample_symbol in symbols:
        
         gesture_pic = cv2.resize(cv2.imread(sample_symbol),(1920, 1080), interpolation=cv2.INTER_LINEAR)
-        timer_gesture_trial = int(3)
+        if (count_round==0):
+            timer_gesture_trial = int(5)
+        else:
+            timer_gesture_trial = int(3)
+        count_round+=1
         prev = time.time()
         while timer_gesture_trial>0:
             i = 0
@@ -271,7 +417,7 @@ def gesture_trial(cap):
             #image = cv2.putText(image, f"PRACTICE TIME!", (1250, 180), font, 6, (0, 165, 255), 6)
             #image[ 0:300,995:2845] = practice_time_image #enlarged banner
             image [ 73:227, 1142:2700] = practice_time_image
-            image = cv2.putText(image, f"Your gesture:", (1250, 400), font, 3, (31, 131, 245), 5)
+            image = cv2.putText(image, f"Your gesture:", (1200, 400), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX, 4, (31, 131, 245), 5)
             user_move = mode_of_prediction
             image = cv2.putText(image, f"{mode_of_prediction}", (1920, 400), font, 3, (255, 255, 255), 5)
             old_image = image[450:1530,0:1920]
@@ -334,7 +480,7 @@ cap = cv2.VideoCapture(0)
 feature_names = [f'feature{i}' for i in range(210)]  # Create feature names
 while True:
     #game_start_display(np_frames_game_start)
-    #video_render('images/game_start.mp4')
+    video_render('images/game_start_final.mp4')
 
     gesture_trial(cap)
     #cv2.destroyAllWindows()
@@ -392,18 +538,20 @@ while True:
 
     #print("rounds",r) # for debugging purpose
     ## change total_questions to 30
-    total_questions = 4 # r = 49 maps to 1 round hence 1 question
+    total_questions = 24 # r = 49 maps to 1 round hence 1 question
     #change total_questions to be global variable since the number of rounds can be lesser than total questions in bank
     question_sequence = np.random.permutation(total_questions).tolist()
     #print(question_sequence)
     qn_count = 0
-    
+    print(len(questions))
+    print(len(correct_option_mapping))
+    print(len(options))
     
     
     # wait for user to choose no of rounds between 0 to 9
-    while 48 < r <= 57:  # Ascii values for 0 & 9
+    while 48 < r <= 52:  # Ascii values for 0 & 9
         cv2.destroyAllWindows()
-        
+        #cv2.waitKey(0) #remove later
         # # Create a new frame/rectangle for displaying question and options
         # cv2.rectangle(frame, (0, 0), (1280, 720), (0, 0, 0), -1)
 
@@ -439,7 +587,7 @@ while True:
             image = cv2.resize(image, (3840, 2160), interpolation=cv2.INTER_LINEAR)
 
             cv2.rectangle(image, (0, 0), (3840, 200), (8, 7, 69), -1)
-            image = cv2.putText(image, f"Your gesture:", (1250, 140), font, 4, (31, 131, 245), 5)
+            image = cv2.putText(image, f"Your gesture:", (1390, 140), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX, 4, (31, 131, 245), 5)
 
             user_move = mode_of_prediction
             image = cv2.putText(image, f"{mode_of_prediction}", (2120, 140), font, 4, (255, 255, 255), 5)
@@ -506,7 +654,7 @@ while True:
             #cv2.rectangle(image, (0, 0), (3840, 200), (15, 29, 95), -1)
             cv2.rectangle(image, (0, 0), (3840, 200), (8, 7, 69), -1)
 
-            image = cv2.putText(image, f"Your gesture:", (1250, 140), font, 4, (31, 131, 245), 5)
+            image = cv2.putText(image, f"Your gesture:", (1390, 140), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX, 4, (31, 131, 245), 5)
             user_move = mode_of_prediction
             image = cv2.putText(image, f"{mode_of_prediction}", (2120, 140), font, 4, (255, 255, 255), 5)
             #winner = findout_winner(user_move, computer_move)
@@ -535,7 +683,7 @@ while True:
 
             image[1940:2160, 1654:2226] = sadhanapada_logo
 
-            image = cv2.putText(image, f"Your Score:", (1600, 1860), font, 3, (31, 131, 245), 3)
+            image = cv2.putText(image, f"Your Score:", (1500, 1860), cv2.FONT_HERSHEY_SCRIPT_SIMPLEX, 4, (31, 131, 245), 3)
             image = cv2.putText(image, f" {uScore}", (2100, 1860), font, 3, (255, 255, 255), 3)
             #image = cv2.putText(image, f"Press 'Enter' for next round", (200, 2060), font, 3, (0, 255, 0), 3)
             #image = cv2.putText(image, f"Attention is all you need", (3000, 2060), font, 2, (0, 255, 0), 3)
@@ -562,6 +710,7 @@ while True:
             if n == 13:
                 cv2.destroyAllWindows()
             if r == 48: #rounds over
+                video_render('images/your_Score_video.mp4')
                 show_winner(uScore, "images/Game jp.jpg")
                 video_render('images/game_end.mp4')
                 cv2.imshow("finish",game_finish_still)
