@@ -519,6 +519,9 @@ kbc_template = cv2.resize(kbc_template, (3840, 850), interpolation=cv2.INTER_CUB
 #video_render('images/telepoorte_fnl.mp4')
 cap = cv2.VideoCapture(0)
 feature_names = [f'feature{i}' for i in range(210)]  # Create feature names
+question_sequence = range(0,4)
+global_qn_count = 0
+
 while True:
     #game_start_display(np_frames_game_start)
     video_render('images/game_start_final.mp4')
@@ -584,9 +587,22 @@ while True:
 
     #print("rounds",r) # for debugging purpose
     ## change total_questions to 30
-    total_questions = 24 # r = 49 maps to 1 round hence 1 question
+    #total_questions = 24 # r = 49 maps to 1 round hence 1 question
     #change total_questions to be global variable since the number of rounds can be lesser than total questions in bank
-    question_sequence = np.random.permutation(total_questions).tolist()
+    #question_sequence = np.random.permutation(total_questions).tolist()
+    if( global_qn_count/4 == 1):
+        question_sequence = range(4,8)
+    if( global_qn_count/4 == 2):
+        question_sequence = range(8,12)
+    if( global_qn_count/4 == 3):
+        question_sequence = range(12,16)
+    if( global_qn_count/4 == 4):
+        question_sequence = range(16,20)
+    if( global_qn_count/4 == 5):
+        question_sequence = range(20,24)
+        global_qn_count = 0
+
+    
     print("QN_SEQ", question_sequence)
     qn_count = 0
     print(len(questions))
@@ -784,7 +800,7 @@ while True:
 
         TIMER = int(countdown_time)
         
-        
+    global_qn_count+=4   
     else:
         continue
 
