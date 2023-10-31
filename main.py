@@ -497,7 +497,8 @@ de = deque(['nothing'] * smooth_factor, maxlen=smooth_factor)
 #kbc_template = cv2.imread("images/kbc.jpeg")
 #kbc_template = cv2.imread("images/kbc_black.png")
 #kbc_template = cv2.imread("images/kbc_with_rps.jpeg")
-kbc_template = cv2.imread("images/kbc_with_maroon3.jpeg")
+#kbc_template = cv2.imread("images/kbc_with_maroon3.jpeg")
+kbc_template = cv2.imread("images/KBC_final_v1.png")
 #sadhanapada_logo = cv2.resize(cv2.imread("images/sadhanapada_logo2.png"),(572,220), interpolation=cv2.INTER_CUBIC)
 sadhanapada_logo = cv2.resize(cv2.imread("images/sadhanapada_HD.jpg"),(572,220), interpolation=cv2.INTER_CUBIC)
 game_finish_still = cv2.resize(cv2.imread("images/game_end_still_image.png"),(3840,2160), interpolation=cv2.INTER_LINEAR)
@@ -523,7 +524,10 @@ while True:
     video_render('images/game_start_final.mp4')
     cv2.imshow("Start",game_start_still)
     cv2.waitKey(0)
-    gesture_trial(cap)
+    while True:
+        gesture_trial(cap)
+        if (cv2.waitKey(0) == 13):
+            break
     #cv2.destroyAllWindows()
     #start_image = cv2.imread("images/youwin.jpg")
     #cv2.namedWindow("Display2", cv2.WINDOW_NORMAL)
@@ -771,6 +775,7 @@ while True:
 
                 else:
                     play_again = False
+                    #cv2.destroyWindow("finish")
 
                 if play_again:
                     uScore =  0
