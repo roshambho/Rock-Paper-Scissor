@@ -61,7 +61,7 @@ print(image_specifications_correct['Image Size'])
 # Heart of the game
 model_name = 'hand_model.sav'
 
-countdown_time = 9
+countdown_time = 15
 font = cv2.FONT_HERSHEY_COMPLEX
 hands = hand_detection_module.HandDetector(max_hands=num_hand)
 model = pickle.load(open(model_name, 'rb')) # Note that hand_model.sav is now loaded in variable 'model'
@@ -654,7 +654,7 @@ while True:
             display_question_and_options(image, qn_no, qn_count)
 
             image = cv2.putText(image, "00:", (3440, 140), font, 4, (0, 0, 255), 3, cv2.LINE_AA)
-            image = cv2.putText(image, f"0{str(TIMER)}", (3640, 140), font, 4, (0, 0, 255), 3, cv2.LINE_AA)
+            image = cv2.putText(image, f"{str(TIMER)}", (3640, 140), font, 4, (0, 0, 255), 3, cv2.LINE_AA)
 
             cv2.imshow('Countdown', image)
             cv2.waitKey(25)
@@ -719,7 +719,9 @@ while True:
             #image = cv2.putText(image, f"{option_selected_correctly}", (1600, 1690), font, 4, (0, 255, 0), 4)
             # image = cv2.putText(image, f"Press '2n' to start next round", (150, 600), font, 2, (0, 255, 0), 3)
             if option_selected_correctly != "Incorrect :/":
-                uScore += 100
+                if(r!=52):
+                    uScore += 100
+                
                 #np_frames = np_frames_correct
                 gif_path = "images/yes.gif"
                 image[1560:2160, 0:3840] = correct_banner
